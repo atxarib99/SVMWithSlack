@@ -304,6 +304,8 @@ class SVM:
 		
 		for c in self.C_list:
 			w,b,ksi = self.slack_svm(X_t,Y_t,1)
+			if w is None:
+				continue
 			predictor = self.F(w,b,X_valid)
 			accuracy['valid'].append(self.get_accuracy(Y_valid,predictor))
 			predictor = self.F(w,b,X_t)
@@ -317,24 +319,26 @@ class SVM:
 		print("\nTrain accuracy", accuracy['train'])
 		print("\nValidation accuracy",accuracy['valid'])
 		c_accuracy = {}
-		# verify best para on test set
-		for c,acc in max_configs:
-			w,b,ksi = self.slack_svm(X_t,Y_t,c)
-			predictor = self.F(w,b,X_test)
-			accuracy = self.get_accuracy(Y_test,predictor)
-			c_accuracy[c] = (w,b,ksi,accuracy)
-		
-		#find best solutions
-		max_accuracy = 0
+
+		# save the weights of the best
 		cw = None
 		cb = None
 		cksi = None
-		matchingc = self.C_list[0]
-		for item in c_accuracy.keys():
-			if c_accuracy[item][3] > max_accuracy:
-				cw,cb,cksi,max_accuracy = c_accuracy[item]
-				matchingc = item
+		matchingc = None
+		# verify best para on test set
+		for c,acc in max_configs:
+			w,b,ksi = self.slack_svm(X_t,Y_t,c)
+			if w is None:
+				continue
+			cw = w
+			cb = b
+			cksi = ksi
+			matchingc = c
+			predictor = self.F(w,b,X_test)
+			accuracy = self.get_accuracy(Y_test,predictor)
+			print("Test set accuracy:", "C:", c, "Accuracy:", accuracy)
 		
+
 		self.w = cw
 		self.b = cb
 		self.ksi = cksi
