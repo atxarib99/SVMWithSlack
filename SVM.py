@@ -91,6 +91,7 @@ class SVM:
 		"""
 		Runs SVM with slack using cvxopt's solver
 		Transforms data into something cvxopt can read and returns result
+		If a model cannot be build it returns None for all three outputs.
 
 		Parameters:
 			X: The data paremeters
@@ -153,8 +154,11 @@ class SVM:
 		w = np.array(w).reshape(n_feature,1)
 		b = solution[n_feature]
 		ksi = list(solution[n_feature+1:])
-		self.verify(X,Y,w,b,ksi)
-		return w,b,ksi
+		good = self.verify(X,Y,w,b,ksi)
+		if good:
+			return w,b,ksi
+		else:
+			return None, None, None
 
 	def F(self,w,b,x):
 		""" 
@@ -198,9 +202,9 @@ class SVM:
 			x_i = X[:,i]
 			if y_i*(np.dot(w.T,x_i)+b) + ksi[i] < 1:
 				print("ERROR FIND !")
-				exit(0)
+				return 0
 		print("Result PASS!")
-		return 0
+		return 1
 
 	def partitionData(self,X,Y):
 		""" Partitions the dataset of X entries with Y labels into 3 seperate unique datasets for train, test, validation
