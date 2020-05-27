@@ -296,7 +296,7 @@ class SVM:
 				Y.append(postiveValue)
 		
 		#return predictions
-		return Y
+		return predictor[0], Y
 			
 	def train(self):
 		X_t,Y_t,X_test,Y_test,X_valid,Y_valid = self.partitionData(self.X,self.Y)
