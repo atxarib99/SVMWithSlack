@@ -36,7 +36,7 @@ svm.train()
 #here you would import your labeless data
 import examplemodeler as model
 X = model.importNoLabelData()
-Y = svm.predict(X)
+confidence, Y = svm.predict(X)
 #print Y
 for prediction in Y:
     print(prediction)
